@@ -1,3 +1,15 @@
+### 使用手册 / User Guide
+
+1. **API 文档 / API Docs**
+   [点击查看｜ View here](https://spring-store-production-b1cd.up.railway.app/swagger-ui/index.html#/)
+
+2. **管理员账号 / Admin Account**
+   账号 / Email: [ppp_melody@163.com](mailto:ppp_melody@163.com)
+   密码 / Password: 666666
+
+3. **支付测试卡号 / Test Card Number**
+   4242 4242 4242 4242 （任意有效期和 CVC 均可 / Any valid date & CVC）
+
 ## 🛒 Spring Store API
 
 ### 🚀 技术栈 / Tech Stack
