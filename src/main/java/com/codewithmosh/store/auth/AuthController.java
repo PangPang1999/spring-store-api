@@ -3,6 +3,7 @@ package com.codewithmosh.store.auth;
 import com.codewithmosh.store.users.UserDto;
 import com.codewithmosh.store.users.UserMapper;
 import com.codewithmosh.store.users.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
+    @Operation(summary = "login and receive two JWT tokens")
     public JwtResponse login(
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response) {
@@ -42,12 +44,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "refresh token")
     public JwtResponse refresh(@CookieValue(value = "refreshToken") String refreshToken) {
         var accessToken = authService.refreshAccessToken(refreshToken);
         return new JwtResponse(accessToken.toString());
     }
 
     @GetMapping("/me")
+    @Operation(summary = "retrieve self intro (login required)")
     public ResponseEntity<UserDto> me() {
         var user = authService.getCurrentUser();
         if (user == null) {

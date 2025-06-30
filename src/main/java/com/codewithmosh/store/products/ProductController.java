@@ -1,5 +1,7 @@
 package com.codewithmosh.store.products;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,12 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/products")
+@Tag(name = "Products")
 public class ProductController {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
 
     @GetMapping
+    @Operation(summary = "checkout (login required)")
     public List<ProductDto> getAllProducts(
             @RequestParam(name = "categoryId", required = false) Long categoryId
     ) {
@@ -33,6 +37,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "get a product by id")
     public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
         var product = productRepository.findById(id).orElse(null);
         if (product == null) {
@@ -43,16 +48,20 @@ public class ProductController {
 
 
     @PostMapping
+    @Operation(summary = "create product, don‘t add id filed (only admin)")
     public ResponseEntity<ProductDto> createProduct(
             @RequestBody ProductDto productDto,
             UriComponentsBuilder uriBuilder) {
         var category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
-        if (category == null) {
+        var quantity = productDto.getQuantity();
+
+        if (quantity == null || quantity < 0 || category == null) {
             return ResponseEntity.badRequest().build();
         }
 
         var product = productMapper.toEntity(productDto);
         product.setCategory(category);
+        product.setQuantity(productDto.getQuantity());
         productRepository.save(product);
         productDto.setId(product.getId());
 
@@ -62,13 +71,17 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "update product (only admin)")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable Long id,
             @RequestBody ProductDto productDto) {
         var category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
-        if (category == null) {
+        var quantity = productDto.getQuantity();
+
+        if (quantity == null || quantity < 0 || category == null) {
             return ResponseEntity.badRequest().build();
         }
+
 
         var product = productRepository.findById(id).orElse(null);
         if (product == null) {
@@ -77,6 +90,7 @@ public class ProductController {
 
         productMapper.update(productDto, product);
         product.setCategory(category);
+        product.setQuantity(productDto.getQuantity());
         productRepository.save(product);
         productDto.setId(product.getId());
 
@@ -84,6 +98,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "delete product (only admin)")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         var product = productRepository.findById(id).orElse(null);
         if (product == null) {

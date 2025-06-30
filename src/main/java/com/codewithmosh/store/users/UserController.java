@@ -1,8 +1,10 @@
 package com.codewithmosh.store.users;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,13 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/users")
+@Tag(name = "Users")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -25,6 +26,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
+    @Operation(summary = "get all users (only admin)")
     public Iterable<UserDto> getAllUsers(
             @RequestParam(required = false, defaultValue = "", name = "sort") String sortBy
     ) {
@@ -32,11 +34,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getUser(@PathVariable Long id) {
+    @Operation(summary = "get user by id (only admin)")
+    public UserDto getUser(
+            @Parameter(description = "The ID of the user")
+            @PathVariable Long id
+    ) {
         return userService.getUser(id);
     }
 
     @PostMapping
+    @Operation(summary = "register user")
     public ResponseEntity<?> registerUser(
             @Valid @RequestBody RegisterUserRequest request,
             UriComponentsBuilder uriBuilder
@@ -47,6 +54,7 @@ public class UserController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "change user name or email (login required)")
     public UserDto updateUser(
             @PathVariable(name = "id") Long id,
             @RequestBody UpdateUserRequest request
@@ -55,11 +63,13 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "delete user by id (only admin)")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 
     @PostMapping("/{id}/change-password")
+    @Operation(summary = "change user password")
     public void changePassword(
             @PathVariable Long id,
             @RequestBody ChangePasswordRequest request
