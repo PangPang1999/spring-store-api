@@ -1,0 +1,88 @@
+## 🛒 Spring Store API
+
+### 🚀 技术栈 / Tech Stack
+
+- **Spring Boot** (3.4.5)
+- **Spring Security** + JWT
+- **Spring Data JPA** + MySQL
+- **MapStruct**（简化实体和 DTO 的转换）
+- **Swagger / OpenAPI**（自动生成的 API 文档）
+- **Flyway**（管理数据库迁移）
+- **Spring Boot Actuator**（监控系统运行情况）
+
+### 🎯 主要功能 / Core Features
+
+- **用户注册和登录**（使用 JWT 验证）
+- **角色权限管理**（USER 和 ADMIN 两种角色）
+- **商品管理**（增删改查）
+- **用户支付与 Webhook 回调**
+- **统一的错误处理和响应格式**
+
+### 📖 接口文档 / API Documentation
+
+- 通过 Swagger UI 自动生成的交互式文档：
+  👉 [点击查看 API 文档](https://spring-store-production-b1cd.up.railway.app/swagger-ui/index.html#/)
+
+### 🌟 设计亮点 / Architectural Highlights
+
+- **简洁的实体-DTO 映射**
+  使用 MapStruct 避免了大量重复的代码。
+
+- **统一的异常处理与响应规范**
+  全局捕获异常，API 响应更统一、更易读。
+
+- **平滑的数据库迁移**
+  Flyway 提供安全可靠的数据库版本管理。
+
+- **完善的系统监控**
+  通过 Spring Boot Actuator 实时查看系统运行指标。
+  👉 [查看 Actuator Metrics](https://spring-store-production-b1cd.up.railway.app/actuator/metrics/http.server.requests)
+
+---
+
+### 🚀 Tech Stack
+
+- **Spring Boot** (3.4.5)
+- **Spring Security** integrated with JWT
+- **Spring Data JPA** and MySQL
+- **MapStruct** simplifies entity-to-DTO conversions
+- **Swagger / OpenAPI** for easy API documentation
+- **Flyway** manages database schema updates
+- **Spring Boot Actuator** keeps an eye on system health
+
+### 🎯 Core Features
+
+- **User Registration & Login**
+  Easy and secure login with JWT.
+
+- **Role-Based Permissions**
+  Separate access for USER and ADMIN roles.
+
+- **Product Management (CRUD)**
+  Easy management of products directly via APIs.
+
+- **Payments & Webhooks**
+  Payments handled smoothly, with webhook support.
+
+- **Unified Errors & Responses**
+  Consistent error messages and responses for better API experience.
+
+### 📖 API Documentation
+
+- Interactive and auto-generated via Swagger UI:
+  👉 [Check the API Docs](https://spring-store-production-b1cd.up.railway.app/swagger-ui/index.html#/)
+
+### 🌟 Architectural Highlights
+
+- **Simplified Entity-DTO Mapping**
+  Less boilerplate, cleaner code thanks to MapStruct.
+
+- **Clear Error Handling & Responses**
+  Easily track down errors with a clear, unified format.
+
+- **Easy Database Updates**
+  Database migrations are safe and reliable using Flyway.
+
+- **Comprehensive Monitoring**
+  Monitor system health and performance anytime with Actuator metrics:
+  👉 [View Metrics](https://spring-store-production-b1cd.up.railway.app/actuator/metrics/http.server.requests)
