@@ -1,7 +1,7 @@
 ### 使用手册 / User Guide
 
 1. **API 文档 / API Docs**
-   [点击查看｜ View here](https://spring-store-production-b1cd.up.railway.app/swagger-ui/index.html#/)
+   [点击查看｜ View here](http://8.130.114.242:8080/swagger-ui/index.html#/)
 
 2. **管理员账号 / Admin Account**
    账号 / Email: [ppp_melody@163.com](mailto:ppp_melody@163.com)
@@ -33,7 +33,7 @@
 ### 📖 接口文档 / API Documentation
 
 - 通过 Swagger UI 自动生成的交互式文档：
-  👉 [点击查看 API 文档](https://spring-store-production-b1cd.up.railway.app/swagger-ui/index.html#/)
+  👉 [点击查看 API 文档](http://8.130.114.242:8080/actuator/metrics/http.server.requests)
 
 ### 🌟 设计亮点 / Architectural Highlights
 
