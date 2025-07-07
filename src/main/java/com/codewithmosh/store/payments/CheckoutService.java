@@ -7,6 +7,8 @@ import com.codewithmosh.store.carts.CartRepository;
 import com.codewithmosh.store.orders.OrderRepository;
 import com.codewithmosh.store.auth.AuthService;
 import com.codewithmosh.store.carts.CartService;
+import com.codewithmosh.store.products.OutOfStockException;
+import com.codewithmosh.store.products.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CheckoutService {
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+    private final ProductService productService;
     private final AuthService authService;
     private final CartService cartService;
     private final PaymentGateway paymentGateway;
@@ -35,8 +38,20 @@ public class CheckoutService {
             throw new CartEmptyException();
         }
 
+        // 是否所有商品都有货
+        boolean allInStock = cart.getItems().stream()
+                .allMatch(item ->
+                        item.getProduct() != null &&
+                                item.getQuantity() <= item.getProduct().getQuantity()
+                );
+        if (!allInStock) {
+            throw new OutOfStockException();
+        }
+
         // 解耦
         var order = Order.fromCart(cart, authService.getCurrentUser());
+        // 预扣库存
+        preDeductStock(order);
 
         orderRepository.save(order);
 
@@ -49,6 +64,13 @@ public class CheckoutService {
             orderRepository.delete(order);
             throw ex;
         }
+    }
+
+    @Transactional
+    public void preDeductStock(Order order) {
+        order.getItems().stream().forEach(item -> {
+            productService.preDeductStock(item.getProduct().getId(), item.getProduct().getQuantity());
+        });
     }
 
     public void handleWebhookEvent(WebhookRequest request) {

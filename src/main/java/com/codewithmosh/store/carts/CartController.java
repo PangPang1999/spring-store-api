@@ -1,5 +1,6 @@
 package com.codewithmosh.store.carts;
 
+import com.codewithmosh.store.products.OutOfStockException;
 import com.codewithmosh.store.products.ProductNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -88,5 +89,10 @@ public class CartController {
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleProductNotFound() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Product not found."));
+    }
+
+    @ExceptionHandler(OutOfStockException.class)
+    public ResponseEntity<Map<String, String>> handleOutOfStock() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Out of stock."));
     }
 }

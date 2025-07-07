@@ -14,6 +14,7 @@ import java.util.List;
 @RequestMapping("/products")
 @Tag(name = "Products")
 public class ProductController {
+    private final ProductService productService;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
@@ -23,27 +24,14 @@ public class ProductController {
     public List<ProductDto> getAllProducts(
             @RequestParam(name = "categoryId", required = false) Long categoryId
     ) {
-        List<Product> products;
-        if (categoryId != null) {
-            products = productRepository.findByCategoryId(categoryId);
-        } else {
-            products = productRepository.findAllWithCategory();
-        }
-
-        return products
-                .stream()
-                .map(productMapper::toDto)
-                .toList();
+        return productService.getAllProducts(categoryId);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "get a product by id")
     public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
-        var product = productRepository.findById(id).orElse(null);
-        if (product == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(productMapper.toDto(product));
+        var dto = productService.getProductById(id);
+        return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
     }
 
 
@@ -52,61 +40,31 @@ public class ProductController {
     public ResponseEntity<ProductDto> createProduct(
             @RequestBody ProductDto productDto,
             UriComponentsBuilder uriBuilder) {
-        var category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
-        var quantity = productDto.getQuantity();
-
-        if (quantity == null || quantity < 0 || category == null) {
+        var dto = productService.createProduct(productDto);
+        if (dto == null) {
             return ResponseEntity.badRequest().build();
         }
-
-        var product = productMapper.toEntity(productDto);
-        product.setCategory(category);
-        product.setQuantity(productDto.getQuantity());
-        productRepository.save(product);
-        productDto.setId(product.getId());
-
-        var uri = uriBuilder.path("/products/{id}").buildAndExpand(productDto.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(productDto);
+        var uri = uriBuilder.path("/products/{id}").buildAndExpand(dto.getId()).toUri();
+        return ResponseEntity.created(uri).body(dto);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "update product (only admin)")
-    public ResponseEntity<ProductDto> updateProduct(
+    public ResponseEntity<?> updateProduct(
             @PathVariable Long id,
             @RequestBody ProductDto productDto) {
-        var category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
-        var quantity = productDto.getQuantity();
-
-        if (quantity == null || quantity < 0 || category == null) {
+        var dto = productService.updateProduct(id, productDto);
+        if (dto == null) {
             return ResponseEntity.badRequest().build();
         }
-
-
-        var product = productRepository.findById(id).orElse(null);
-        if (product == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        productMapper.update(productDto, product);
-        product.setCategory(category);
-        product.setQuantity(productDto.getQuantity());
-        productRepository.save(product);
-        productDto.setId(product.getId());
-
-        return ResponseEntity.ok(productDto);
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "delete product (only admin)")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        var product = productRepository.findById(id).orElse(null);
-        if (product == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        productRepository.delete(product);
-
-        return ResponseEntity.noContent().build();
+        return productService.deleteProduct(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

@@ -3,6 +3,7 @@ package com.codewithmosh.store.payments;
 import com.codewithmosh.store.common.ErrorDto;
 import com.codewithmosh.store.carts.CartEmptyException;
 import com.codewithmosh.store.carts.CartNotFoundException;
+import com.codewithmosh.store.products.OutOfStockException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +44,10 @@ public class CheckoutController {
     @ExceptionHandler({CartNotFoundException.class, CartEmptyException.class})
     public ResponseEntity<ErrorDto> handleException(Exception ex) {
         return ResponseEntity.badRequest().body(new ErrorDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(OutOfStockException.class)
+    public ResponseEntity<Map<String, String>> handleOutOfStock() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Out of stock."));
     }
 }
