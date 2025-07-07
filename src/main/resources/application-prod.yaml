@@ -1,6 +1,56 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-websiteUrl: https://mystore.com
+    # 注意：生产不应该使用createDatabaseIfNotExist，应该手动建，避免误建误删
+    url: jdbc:mysql://47.111.2.191:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    #    url: jdbc:mysql://localhost:3306/store_api?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: myPassword!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          # url: jdbc:mysql://localhost:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://47.111.2.191:3306/store_api?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          username: root
+          password: myPassword!
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.alibaba.druid.pool.DruidDataSource
+        slave1:
+          url: jdbc:mysql://114.215.192.250:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          username: root
+          password: myPassword!
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.alibaba.druid.pool.DruidDataSource
+        slave2:
+          url: jdbc:mysql://47.97.225.83:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          username: root
+          password: myPassword!
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.alibaba.druid.pool.DruidDataSource
+
+  druid:
+    stat-view-servlet:
+      enabled: true
+      login-username: admin
+      login-password: admin
+    filter:
+      stat:
+        log-slow-sql: true
+        slow-sql-millis: 1000
+        merge-sql: true
+
+  flyway:
+    # 注意：生产不应该使用createDatabaseIfNotExist，应该手动建，避免误建误删
+    url: jdbc:mysql://47.111.2.191:3306/store_api?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    user: root
+    password: myPassword!
+
+  jpa:
+    show-sql: true
+
+websiteUrl: http://localhost:4242
 swagger:
-  server-url: https://spring-store-production-b1cd.up.railway.app
+  server-url: http://localhost:8080
