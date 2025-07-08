@@ -1,8 +1,9 @@
 ### 使用手册 / User Guide
 
 1. **API 文档 / API Docs**
-   [点击查看｜ View here](http://8.130.114.242:8080/swagger-ui/index.html#/)
-
+   [点击查看｜View here](http://8.130.114.242:8080/swagger-ui/index.html#/)
+   > ⚠️ 建议使用 Chrome 浏览器访问。Safari 可能存在兼容性问题。  
+   > **Recommended to use Chrome browser. Safari may not work properly.**
 2. **管理员账号 / Admin Account**
    账号 / Email: [ppp_melody@163.com](mailto:ppp_melody@163.com)
    密码 / Password: 666666
@@ -33,7 +34,9 @@
 ### 📖 接口文档 / API Documentation
 
 - 通过 Swagger UI 自动生成的交互式文档：
-  👉 [点击查看 API 文档](http://8.130.114.242:8080/actuator/metrics/http.server.requests)
+  👉 [点击查看 API 文档](http://8.130.114.242:8080/swagger-ui/index.html#/)
+  > ⚠️ 建议使用 Chrome 浏览器访问。Safari 可能存在兼容性问题。  
+  > **Recommended to use Chrome browser. Safari may not work properly.**
 
 ### 🌟 设计亮点 / Architectural Highlights
 
@@ -48,7 +51,7 @@
 
 - **完善的系统监控**
   通过 Spring Boot Actuator 实时查看系统运行指标。
-  👉 [查看 Actuator Metrics](https://spring-store-production-b1cd.up.railway.app/actuator/metrics/http.server.requests)
+  👉 [查看 Actuator Metrics](http://8.130.114.242:8080/actuator/metrics/http.server.requests)
 
 ---
 
@@ -82,7 +85,8 @@
 ### 📖 API Documentation
 
 - Interactive and auto-generated via Swagger UI:
-  👉 [Check the API Docs](https://spring-store-production-b1cd.up.railway.app/swagger-ui/index.html#/)
+  👉 [Check the API Docs](http://8.130.114.242:8080/swagger-ui/index.html#/)
+  > ⚠️ **Recommended to use Chrome browser. Safari may not work properly.**
 
 ### 🌟 Architectural Highlights
 
@@ -97,4 +101,4 @@
 
 - **Comprehensive Monitoring**
   Monitor system health and performance anytime with Actuator metrics:
-  👉 [View Metrics](https://spring-store-production-b1cd.up.railway.app/actuator/metrics/http.server.requests)
+  👉 [View Metrics](http://8.130.114.242:8080/actuator/metrics/http.server.requests)
