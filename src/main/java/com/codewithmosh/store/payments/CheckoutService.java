@@ -10,6 +10,7 @@ import com.codewithmosh.store.carts.CartService;
 import com.codewithmosh.store.products.OutOfStockException;
 import com.codewithmosh.store.products.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class CheckoutService {
     private final AuthService authService;
     private final CartService cartService;
     private final PaymentGateway paymentGateway;
+    private final RabbitTemplate rabbitTemplate;
 
     @Value("${websiteUrl}")
     private String websiteUrl;
@@ -56,9 +58,22 @@ public class CheckoutService {
         orderRepository.save(order);
 
         try {
+            //  1. 尝试创建 Stripe Checkout Session
             var session = paymentGateway.createCheckoutSession(order);
 
+            // // 2. 如果 Stripe Session 成功创建，才发送延迟队列消息
+            // 将订单id记录，将其放进延迟队列，2分钟后死，监听死
+            // 若超时，将ORDER设置为失败，即便支付成功，也给他退款！
+            rabbitTemplate.convertAndSend(
+                    PaymentRabbitConfig.ORDER_EXCHANGE,      // 目标交换机的名字
+                    PaymentRabbitConfig.ORDER_ROUTING_KEY,   // 发送到交换机的路由key
+                    order.getId()                           // 要发送的消息内容，这里是订单ID
+            );
+
+            // 3. 清理购物车
             cartService.clearCart(cart.getId());
+
+            // 4. 返回支付响应
             return new CheckoutResponse(order.getId(), session.getCheckoutUrl());
         } catch (PaymentException ex) {
             orderRepository.delete(order);
@@ -69,7 +84,7 @@ public class CheckoutService {
     @Transactional
     public void preDeductStock(Order order) {
         order.getItems().stream().forEach(item -> {
-            productService.preDeductStock(item.getProduct().getId(), item.getProduct().getQuantity());
+            productService.preDeductStock(item.getProduct().getId(), item.getQuantity());
         });
     }
 

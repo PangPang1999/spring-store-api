@@ -91,5 +91,6 @@ public class CartService {
         cart.clear();
 
         cartRepository.save(cart);
+        cartRepository.delete(cart);
     }
 }
