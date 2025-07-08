@@ -15,3 +15,6 @@ management:
     web:
       exposure:
         include: "*"  # 或 "health", "info" 等
+  endpoint:
+    health:
+      show-details: always

@@ -51,6 +51,25 @@ spring:
   jpa:
     show-sql: true
 
+  data:
+    redis:
+      cluster:
+        nodes:
+          - 47.111.2.191:6379
+          - 114.215.192.250:6379
+          - 47.97.225.83:6379
+          - 47.111.2.191:6380
+          - 114.215.192.250:6380
+          - 47.97.225.83:6380
+      # password:  # 如果你的 Redis 有设置密码，填在这里，没有可以注释掉
+      timeout: 3000 # 毫秒，连接超时
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 10000
+
 websiteUrl: http://localhost:4242
 swagger:
   server-url: http://localhost:8080

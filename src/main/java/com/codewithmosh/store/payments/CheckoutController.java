@@ -20,7 +20,7 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
 
     @PostMapping
-    @Operation(summary = "receive webhook")
+    @Operation(summary = "checkout (login required)")
     public CheckoutResponse checkout(@Valid @RequestBody CheckoutRequest request) {
         return checkoutService.checkout(request);
     }

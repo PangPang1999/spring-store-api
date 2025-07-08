@@ -15,13 +15,10 @@ import java.util.List;
 @Tag(name = "Products")
 public class ProductController {
     private final ProductService productService;
-    private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
-    private final CategoryRepository categoryRepository;
 
     @GetMapping
-    @Operation(summary = "checkout (login required)")
-    public List<ProductDto> getAllProducts(
+    @Operation(summary = "get a products")
+    public List<ProductListDto> getAllProducts(
             @RequestParam(name = "categoryId", required = false) Long categoryId
     ) {
         return productService.getAllProducts(categoryId);
