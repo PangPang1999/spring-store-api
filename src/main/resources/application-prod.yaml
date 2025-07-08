@@ -70,6 +70,22 @@ spring:
           min-idle: 0
           max-wait: 10000
 
+  rabbitmq:
+    # 用户名和密码（默认值是guest，如果你有更改，更新这里的值）
+    username: guest
+    password: guest
+    # 配置多个 RabbitMQ 集群节点地址
+    addresses: 47.111.2.191:5672,114.215.192.250:5672,47.97.225.83:5672
+    # 虚拟主机配置，默认是根虚拟主机 /
+    virtual-host: /
+    # 连接的端口，RabbitMQ 的默认端口是 5672
+    port: 5672
+    # 连接池配置（可选）
+    connection-timeout: 30000  # 连接超时（单位：毫秒）
+    requested-heartbeat: 60    # 请求心跳间隔（单位：秒）
+    # 指定集群的 Erlang Cookie，确保集群内所有节点一致
+    erlang-cookie: SuperSecretCookie
+
 websiteUrl: http://localhost:4242
 swagger:
   server-url: http://localhost:8080
