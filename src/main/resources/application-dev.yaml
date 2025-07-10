@@ -1,81 +1,109 @@
 spring:
-  datasource:
-    # 注意：生产不应该使用createDatabaseIfNotExist，应该手动建，避免误建误删
-    url: jdbc:mysql://localhost:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-    #    url: jdbc:mysql://localhost:3306/store_api?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: myPassword!
+  # HOST_DOCKER_INTERNAL 为本地Docker启动时，脚本内配置参数
+  datasource: # 使用Mysql主从时，仍然需要配置 datasource ，否则应用无法启动
+    url: jdbc:mysql://${HOST_DOCKER_INTERNAL:localhost}:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root              # 数据库用户名（建议生产环境不要用root，改用专有账号，比如只授予 SELECT, INSERT, UPDATE, DELETE，绝不给 DROP, CREATE USER, GRANT 等超级权限）
+    password: myPassword!  # 数据库用户密码（建议生产环境用复杂强密码，并用环境变量管理）
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     dynamic:
-      primary: master
-      strict: false
+      primary: master  # 'primary' 指定默认使用的数据源名称。当没有明确指定数据源时，将使用此处配置的数据源。
+      strict: false # 'strict' 设置是否开启严格模式。当找不到匹配的数据源时抛出异常（true），或回退到使用 primary 指定的数据源（false）。
       datasource:
-        master:
-          # url: jdbc:mysql://localhost:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-          url: jdbc:mysql://localhost:3306/store_api?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-          username: root
-          password: myPassword!
+        master: # 定义名为 'master' 的主数据源配置
+          url: jdbc:mysql://${HOST_DOCKER_INTERNAL:localhost}:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          username: root # 本地测试直接使用 root
+          password: myPassword! # 主从密码保持一致
           driver-class-name: com.mysql.cj.jdbc.Driver
-          type: com.alibaba.druid.pool.DruidDataSource
+          type: com.alibaba.druid.pool.DruidDataSource  # 数据源类型，这里指定使用 Druid 连接池
         slave1:
-          url: jdbc:mysql://localhost:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://${HOST_DOCKER_INTERNAL:localhost}:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
           username: root
           password: myPassword!
           driver-class-name: com.mysql.cj.jdbc.Driver
           type: com.alibaba.druid.pool.DruidDataSource
         slave2:
-          url: jdbc:mysql://localhost:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://${HOST_DOCKER_INTERNAL:localhost}:3306/store_api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
           username: root
           password: myPassword!
           driver-class-name: com.mysql.cj.jdbc.Driver
           type: com.alibaba.druid.pool.DruidDataSource
 
   druid:
+    # Druid 监控页面配置
     stat-view-servlet:
+      # 是否启用 Druid 内置的 StatViewServlet，用于展示 Druid 的监控数据。
+      # 设置为 true 后，可以通过 /{context-path}/druid/ 访问监控页面（默认路径）。
       enabled: true
+      # 访问 Druid 监控页面的登录用户名。在生产环境中，建议设置更复杂和安全的用户名。
       login-username: admin
+      # 访问 Druid 监控页面的登录密码。在生产环境中，强烈建议设置更复杂和安全的密码，并通过环境变量等方式注入。
       login-password: admin
+    # Druid 过滤器配置
     filter:
+      # 统计过滤器配置
       stat:
+        # 是否在日志中记录慢 SQL。
         log-slow-sql: true
+        # 慢 SQL 的阈值，单位：毫秒。
         slow-sql-millis: 1000
+        # 是否开启 SQL 合并功能，尝试合并相同的 SQL 语句
         merge-sql: true
 
   flyway:
     # 注意：生产不应该使用createDatabaseIfNotExist，应该手动建，避免误建误删
-    url: jdbc:mysql://localhost:3306/store_api?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://${HOST_DOCKER_INTERNAL:localhost}:3306/store_api?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
     user: root
     password: myPassword!
 
   jpa:
+    # 是否在控制台输出 JPA（Hibernate）生成的 SQL 语句。
+    # 设置为 true 对于开发调试非常有用，可以直观地看到 ORM 框架执行的数据库操作。
+    # 在生产环境中，通常会设置为 false，或通过日志级别控制，以避免日志量过大和潜在的敏感信息泄露。
     show-sql: true
 
   data:
     redis:
       cluster:
+        # Redis 集群节点地址列表。
+        # 在生产环境中，这里应该配置您的 Redis 集群中所有主节点的 IP 地址和端口。
+        # 此处为本地开发，运行多个 Redis 实例来模拟集群。
         nodes:
-          - 127.0.0.1:6379
-          - 127.0.0.1:6380
-          - 127.0.0.1:6381
-          - 127.0.0.1:6382
-          - 127.0.0.1:6383
-          - 127.0.0.1:6384
-      # password:  # 如果你的 Redis 有设置密码，填在这里，没有可以注释掉
-      timeout: 3000 # 毫秒，连接超时
+          - ${HOST_DOCKER_INTERNAL:localhost}:6379
+          - ${HOST_DOCKER_INTERNAL:localhost}:6380
+          - ${HOST_DOCKER_INTERNAL:localhost}:6381
+          - ${HOST_DOCKER_INTERNAL:localhost}:6382
+          - ${HOST_DOCKER_INTERNAL:localhost}:6383
+          - ${HOST_DOCKER_INTERNAL:localhost}:6384
+      # Redis 连接密码。如果 Redis 实例设置了密码，在此处填写。
+      # 强烈建议在生产环境中使用强密码，并使用环境变量或配置服务进行管理，避免硬编码。
+      password: MyVeryStrongPassword123
+      timeout: 3000 # 毫秒，如果在指定时间内无法建立连接，则会抛出连接超时异常。
       lettuce:
+        # Lettuce 客户端连接池配置。Lettuce 是 Spring Boot 默认的 Redis 客户端，提供了异步和响应式支持。
         pool:
+          # 连接池中最大的连接数（活跃连接和空闲连接的总和）。
           max-active: 8
+          # 连接池中最大的空闲连接数。
           max-idle: 8
+          # 连接池中最小的空闲连接数。
           min-idle: 0
+          # 当连接池中没有可用连接时，客户端等待获取连接的最大等待时间，单位为毫秒。如果超过此时间仍未获得连接，则会抛出异常。
           max-wait: 10000
 
   rabbitmq:
-    # 用户名和密码（默认值是guest，如果你有更改，更新这里的值）
+    # RabbitMQ 连接用户名。
+    # 默认值通常是 'guest'。在生产环境中，应创建具有最小权限的专用用户，并使用环境变量或配置服务管理
     username: guest
+    # RabbitMQ 连接密码。
+    # 默认值通常是 'guest'。在生产环境中，应设置复杂且安全的密码，并使用环境变量或配置服务管理。
     password: guest
-    # 配置多个 RabbitMQ 集群节点地址
-    addresses: localhost:5672,localhost:5673,localhost:5674
+    # RabbitMQ 集群节点地址列表。
+    # 配置多个地址以支持高可用性，应用会尝试连接列表中的任一可用节点。
+    addresses:
+      - ${HOST_DOCKER_INTERNAL:localhost:5672}
+      - ${HOST_DOCKER_INTERNAL:localhost:5673}
+      - ${HOST_DOCKER_INTERNAL:localhost:5674}
     # 虚拟主机配置，默认是根虚拟主机 /
     virtual-host: /
     # 连接的端口，RabbitMQ 的默认端口是 5672
@@ -83,9 +111,20 @@ spring:
     # 连接池配置（可选）
     connection-timeout: 30000  # 连接超时（单位：毫秒）
     requested-heartbeat: 60    # 请求心跳间隔（单位：秒）
-    # 指定集群的 Erlang Cookie，确保集群内所有节点一致
+    # 指定集群的 Erlang Cookie。
+    # 当 RabbitMQ 节点组成集群时，它们需要共享相同的 Erlang Cookie 才能互相认证和通信。
+    # 在生产环境中，这个 Cookie 应该是一个随机生成且保密的强字符串。
     erlang-cookie: SuperSecretCookie
 
-websiteUrl: http://localhost:4242
+  jwt:
+    secret: ${JWT_SECRET} # 生成/校验JWT令牌的密钥
+    accessTokenExpiration: 300 # 5m 短期令牌时效
+    refreshTokenExpiration: 604800 # 7d 长期令牌时效
+stripe:
+  secretKey: ${STRIPE_SECRET_KEY} # Stripe 商户账户的测试后端密钥（比如发起收款、查询订单、退款等）
+  webhookSecretKey: ${STRIPE_WEBHOOK_SECRET_KEY} # Stripe 测试密钥校验回调请求的真实性，本地测试时使用穿透工具才能收到回调
+
+websiteUrl: http://${HOST_DOCKER_INTERNAL:localhost}:4242
 swagger:
-  server-url: http://localhost:8080
+  server-url: http://${HOST_DOCKER_INTERNAL:localhost}:8080
+
